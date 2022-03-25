@@ -1,9 +1,12 @@
+require('./config/general.js')
+
 const express = require('express');
 const cors = require('cors');
+const { dbConnect } = require('./config/mongo.js');
 
 const app = express();
 
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use(cors({ origin: true, credentials: true }));
@@ -15,8 +18,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.listen(5000, () => {
-    console.log('API READY. Listening on port', 5000);
-});
+app.use('/api', require('./routes/routes'));
 
-console.log("Hello World!");
+dbConnect();
+
+if (process.env.NODE_ENV === 'dev') {
+    app.listen(process.env.PORT, () => {
+        console.log('API READY. Listening on port', process.env.PORT);
+    });
+}
